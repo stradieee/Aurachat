@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura — Minimalist Social Network</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f8f9fa',
+                            100: '#f1f3f5',
+                            200: '#e9ecef',
+                            300: '#dee2e6',
+                            400: '#ced4da',
+                            500: '#adb5bd',
+                            600: '#6c757d',
+                            700: '#495057',
+                            800: '#343a40',
+                            900: '#212529',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for clean minimalistic look */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.4); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .dark .glass-panel {
+            background: rgba(33, 37, 41, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="h-full bg-brand-50 text-brand-900 dark:bg-brand-900 dark:text-brand-100 transition-colors duration-300 flex flex-col overflow-hidden">
+
+    <div id="app" class="flex h-screen w-screen overflow-hidden relative">
+
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden md:flex flex-col w-64 border-r border-brand-200 dark:border-brand-800 glass-panel z-20 justify-between p-6">
+            <div class="space-y-8">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 px-2">
+                    <div class="w-9 h-9 rounded-xl bg-brand-900 dark:bg-brand-100 text-brand-100 dark:text-brand-900 flex items-center justify-center font-bold text-lg tracking-wider">A</div>
+                    <span class="text-xl font-bold tracking-tight">Aura</span>
+                </div>
+
+                <!-- Nav Links -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('feed')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-900 dark:text-brand-100 bg-brand-200/60 dark:bg-brand-800/60" data-tab="feed">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span>Feed</span>
+                    </button>
+                    <button onclick="switchTab('stories')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800/40" data-tab="stories">
+                        <i data-lucide="circle-dot" class="w-5 h-5"></i>
+                        <span>Stories</span>
+                    </button>
+                    <button onclick="switchTab('messages')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800/40" data-tab="messages">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        <span>Messages</span>
+                        <span id="unread-badge" class="ml-auto bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 text-xs px-2 py-0.5 rounded-full font-semibold">2</span>
+                    </button>
+                    <button onclick="switchTab('ai')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800/40" data-tab="ai">
+                        <i data-lucide="bot" class="w-5 h-5"></i>
+                        <span>AI Assistant</span>
+                        <span class="ml-auto text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-bold border border-amber-500/20">Gemini</span>
+                    </button>
+                    <button onclick="switchTab('profile')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800/40" data-tab="profile">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <span>Profile</span>
+                    </button>
+                    <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800/40" data-tab="settings">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- User Footer & Theme Toggle -->
+            <div class="space-y-4 pt-4 border-t border-brand-200 dark:border-brand-800">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <h4 class="text-sm font-semibold leading-tight">Clara Vance</h4>
+                            <p class="text-xs text-brand-500">@claravance</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-brand-600 dark:text-brand-400 hover:bg-brand-200/50 dark:hover:bg-brand-800 transition-colors">
+                        <i data-lucide="moon" id="theme-icon" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+            <!-- Mobile Top Header -->
+            <header class="md:hidden flex items-center justify-between px-4 py-3 border-b border-brand-200 dark:border-brand-800 glass-panel z-20">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-brand-900 dark:bg-brand-100 text-brand-100 dark:text-brand-900 flex items-center justify-center font-bold text-sm">A</div>
+                    <span class="text-lg font-bold tracking-tight">Aura</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-brand-600 dark:text-brand-400">
+                        <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                    <button onclick="openCallModal('audio')" class="p-2 rounded-lg text-brand-600 dark:text-brand-400">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <div id="views-container" class="flex-1 overflow-y-auto relative">
+
+                <!-- FEED VIEW -->
+                <div id="view-feed" class="view-section max-w-2xl mx-auto px-4 py-6 space-y-6 pb-24 md:pb-12">
+                    <!-- Stories Bar Mini -->
+                    <div class="flex space-x-3 overflow-x-auto pb-2 scrollbar-none">
+                        <div onclick="openStoryViewer(0)" class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0 group">
+                            <div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 to-rose-500 group-hover:scale-105 transition-transform">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces" class="w-full h-full object-cover rounded-full border-2 border-brand-50 dark:border-brand-900" alt="Story">
+                            </div>
+                            <span class="text-xs font-medium text-brand-600 dark:text-brand-400">Marcus</span>
+                        </div>
+                        <div onclick="openStoryViewer(1)" class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0 group">
+                            <div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 to-rose-500 group-hover:scale-105 transition-transform">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces" class="w-full h-full object-cover rounded-full border-2 border-brand-50 dark:border-brand-900" alt="Story">
+                            </div>
+                            <span class="text-xs font-medium text-brand-600 dark:text-brand-400">Elena</span>
+                        </div>
+                        <div onclick="openStoryViewer(2)" class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0 group">
+                            <div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 to-rose-500 group-hover:scale-105 transition-transform">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces" class="w-full h-full object-cover rounded-full border-2 border-brand-50 dark:border-brand-900" alt="Story">
+                            </div>
+                            <span class="text-xs font-medium text-brand-600 dark:text-brand-400">Julian</span>
+                        </div>
+                        <div class="flex flex-col items-center space-y-1 cursor-pointer flex-shrink-0 group opacity-60">
+                            <div class="w-16 h-16 rounded-full p-[2px] bg-brand-300 dark:bg-brand-700">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=faces" class="w-full h-full object-cover rounded-full border-2 border-brand-50 dark:border-brand-900" alt="Story">
+                            </div>
+                            <span class="text-xs font-medium text-brand-500">Sarah</span>
+                        </div>
+                    </div>
+
+                    <!-- Create Post Box -->
+                    <div class="glass-panel border border-brand-200 dark:border-brand-800 rounded-2xl p-4 shadow-sm space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" class="w-10 h-10 rounded-full object-cover" alt="Clara">
+                            <textarea id="post-input" placeholder="Share your architectural thoughts or minimalist moments..." class="w-full bg-transparent border-none focus:outline-none resize-none text-sm placeholder-brand-400 dark:placeholder-brand-600 py-2" rows="2"></textarea>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-brand-100 dark:border-brand-800/60">
+                            <div class="flex items-center space-x-2 text-brand-500">
+                                <button class="p-2 hover:bg-brand-100 dark:hover:bg-brand-800 rounded-xl transition-colors flex items-center space-x-1 text-xs font-medium">
+                                    <i data-lucide="image" class="w-4 h-4"></i>
+                                    <span>Photo</span>
+                                </button>
+                                <button class="p-2 hover:bg-brand-100 dark:hover:bg-brand-800 rounded-xl transition-colors flex items-center space-x-1 text-xs font-medium">
+                                    <i data-lucide="hash" class="w-4 h-4"></i>
+                                    <span>Topic</span>
+                                </button>
+                            </div>
+                            <button onclick="createPost()" class="bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 px-4 py-2 rounded-xl text-xs font-semibold hover:opacity-90 transition-opacity">
+                                Publish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Post Feed List -->
+                    <div id="posts-container" class="space-y-4">
+                        <!-- Dynamic posts will be injected here -->
+                    </div>
+                </div>
+
+                <!-- STORIES VIEW -->
+                <div id="view-stories" class="view-section hidden max-w-2xl mx-auto px-4 py-6 space-y-6 pb-24 md:pb-12">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight">Temporary Stories</h2>
+                            <p class="text-xs text-brand-500">Disappears after 24 hours. WhatsApp/Instagram style.</p>
+                        </div>
+                        <button onclick="openStoryUploader()" class="flex items-center space-x-2 bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 px-4 py-2 rounded-xl text-xs font-semibold">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Add Story</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div onclick="openStoryViewer(0)" class="relative h-72 rounded-2xl overflow-hidden cursor-pointer group shadow-sm border border-brand-200 dark:border-brand-800">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=600&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Story">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-4 text-white">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-8 h-8 rounded-full border border-white/50 object-cover">
+                                    <span class="text-xs font-semibold">Marcus Vance</span>
+                                </div>
+                                <span class="text-xs font-medium opacity-90">Minimalist architecture design ✨</span>
+                            </div>
+                        </div>
+                        <div onclick="openStoryViewer(1)" class="relative h-72 rounded-2xl overflow-hidden cursor-pointer group shadow-sm border border-brand-200 dark:border-brand-800">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=600&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Story">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-4 text-white">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" class="w-8 h-8 rounded-full border border-white/50 object-cover">
+                                    <span class="text-xs font-semibold">Elena Rostova</span>
+                                </div>
+                                <span class="text-xs font-medium opacity-90">Morning coffee & design review ☕</span>
+                            </div>
+                        </div>
+                        <div onclick="openStoryViewer(2)" class="relative h-72 rounded-2xl overflow-hidden cursor-pointer group shadow-sm border border-brand-200 dark:border-brand-800">
+                            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=600&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Story">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-4 text-white">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" class="w-8 h-8 rounded-full border border-white/50 object-cover">
+                                    <span class="text-xs font-semibold">Julian Ray</span>
+                                </div>
+                                <span class="text-xs font-medium opacity-90">Urban geometry studies</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MESSAGES VIEW -->
+                <div id="view-messages" class="view-section hidden h-full flex flex-col md:flex-row pb-16 md:pb-0">
+                    <!-- Conversations Sidebar -->
+                    <div class="w-full md:w-80 border-r border-brand-200 dark:border-brand-800 flex flex-col h-full bg-brand-50/50 dark:bg-brand-900/50">
+                        <div class="p-4 border-b border-brand-200 dark:border-brand-800 flex items-center justify-between">
+                            <h3 class="font-bold text-lg">Messages</h3>
+                            <button class="p-2 rounded-xl hover:bg-brand-200/50 dark:hover:bg-brand-800 text-brand-600 dark:text-brand-400">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="p-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-brand-400"></i>
+                                <input type="text" placeholder="Search conversations..." class="w-full bg-brand-200/50 dark:bg-brand-800/50 rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none border border-brand-200 dark:border-brand-700">
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto divide-y divide-brand-200/50 dark:divide-brand-800/50">
+                            <div onclick="selectChat('Marcus Vance', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces')" class="p-3 flex items-center space-x-3 hover:bg-brand-200/30 dark:hover:bg-brand-800/30 cursor-pointer transition-colors bg-brand-200/20 dark:bg-brand-800/20">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-brand-50 dark:border-brand-900"></div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-semibold truncate">Marcus Vance</h4>
+                                        <span class="text-[10px] text-brand-400">10:42 AM</span>
+                                    </div>
+                                    <p class="text-xs text-brand-500 truncate">Let's review the minimalist wireframe later today.</p>
+                                </div>
+                            </div>
+                            <div onclick="selectChat('Elena Rostova', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces')" class="p-3 flex items-center space-x-3 hover:bg-brand-200/30 dark:hover:bg-brand-800/30 cursor-pointer transition-colors">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-brand-50 dark:border-brand-900"></div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-semibold truncate">Elena Rostova</h4>
+                                        <span class="text-[10px] text-brand-400">Yesterday</span>
+                                    </div>
+                                    <p class="text-xs text-brand-500 truncate">The typography looks stunning on mobile!</p>
+                                </div>
+                            </div>
+                            <div onclick="selectChat('Design Squad (Group)', 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop')" class="p-3 flex items-center space-x-3 hover:bg-brand-200/30 dark:hover:bg-brand-800/30 cursor-pointer transition-colors">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-brand-500 rounded-full border-2 border-brand-50 dark:border-brand-900"></div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-semibold truncate">Design Squad</h4>
+                                        <span class="text-[10px] text-brand-400">Oct 4</span>
+                                    </div>
+                                    <p class="text-xs text-brand-500 truncate">Julian: Uploaded new assets.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Chat Window -->
+                    <div id="active-chat-window" class="flex-1 flex flex-col h-full bg-brand-100/30 dark:bg-brand-900/30">
+                        <!-- Chat Header -->
+                        <div class="p-4 border-b border-brand-200 dark:border-brand-800 glass-panel flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <img id="chat-header-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-10 h-10 rounded-full object-cover">
+                                <div>
+                                    <h4 id="chat-header-name" class="text-sm font-semibold">Marcus Vance</h4>
+                                    <p id="chat-header-status" class="text-[10px] text-emerald-500 font-medium">Online</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="openCallModal('audio')" class="p-2.5 rounded-xl hover:bg-brand-200/50 dark:hover:bg-brand-800 text-brand-600 dark:text-brand-400 transition-colors">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="openCallModal('video')" class="p-2.5 rounded-xl hover:bg-brand-200/50 dark:hover:bg-brand-800 text-brand-600 dark:text-brand-400 transition-colors">
+                                    <i data-lucide="video" class="w-4 h-4"></i>
+                                </button>
+                                <button class="p-2.5 rounded-xl hover:bg-brand-200/50 dark:hover:bg-brand-800 text-brand-600 dark:text-brand-400 transition-colors">
+                                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages List -->
+                        <div id="chat-messages-list" class="flex-1 p-4 overflow-y-auto space-y-4">
+                            <div class="flex justify-start">
+                                <div class="bg-white dark:bg-brand-800 p-3 rounded-2xl rounded-tl-sm max-w-xs sm:max-w-md text-xs shadow-sm">
+                                    Hey Clara! Have you had a chance to look over the new wireframes?
+                                    <span class="block text-[9px] text-brand-400 mt-1 text-right">10:39 AM</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <div class="bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 p-3 rounded-2xl rounded-tr-sm max-w-xs sm:max-w-md text-xs shadow-sm">
+                                    Yes! The typography and whitespace balance is wonderful.
+                                    <span class="block text-[9px] opacity-75 mt-1 text-right">10:41 AM</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-start">
+                                <div class="bg-white dark:bg-brand-800 p-3 rounded-2xl rounded-tl-sm max-w-xs sm:max-w-md text-xs shadow-sm">
+                                    Let's review the minimalist wireframe later today.
+                                    <span class="block text-[9px] text-brand-400 mt-1 text-right">10:42 AM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Typing Indicator Simulation -->
+                        <div id="typing-indicator" class="px-4 py-1 text-[10px] text-brand-400 italic hidden">
+                            Marcus is typing...
+                        </div>
+
+                        <!-- Chat Input Box -->
+                        <div class="p-3 border-t border-brand-200 dark:border-brand-800 glass-panel flex items-center space-x-2">
+                            <button class="p-2 text-brand-400 hover:text-brand-600 dark:hover:text-brand-200">
+                                <i data-lucide="paperclip" class="w-5 h-5"></i>
+                            </button>
+                            <input id="chat-input-field" type="text" placeholder="Type a message..." class="flex-1 bg-brand-200/50 dark:bg-brand-800/50 rounded-xl px-4 py-2 text-xs focus:outline-none border border-brand-200 dark:border-brand-700" onkeydown="handleChatKey(event)">
+                            <button onclick="sendChatMessage()" class="p-2.5 rounded-xl bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 hover:opacity-90 transition-opacity">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI ASSISTANT VIEW -->
+                <div id="view-ai" class="view-section hidden max-w-3xl mx-auto px-4 py-6 h-full flex flex-col pb-24 md:pb-12">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-brand-200 dark:border-brand-800">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center">
+                                <i data-lucide="bot" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-base">Aura Intelligence</h3>
+                                <p class="text-xs text-brand-500">Powered by Google Gemini API</p>
+                            </div>
+                        </div>
+                        <button onclick="clearAIText()" class="text-xs text-brand-500 hover:text-brand-800 dark:hover:text-brand-200 underline">Clear Chat</button>
+                    </div>
+
+                    <!-- AI Chat Messages -->
+                    <div id="ai-messages-list" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="bot" class="w-4 h-4"></i>
+                            </div>
+                            <div class="bg-white dark:bg-brand-800 p-4 rounded-2xl rounded-tl-sm text-xs space-y-2 shadow-sm border border-brand-200/50 dark:border-brand-700/50 max-w-lg">
+                                <p>Hello Clara. I am your integrated Gemini-powered AI assistant. Ask me to brainstorm design concepts, summarize posts, write creative status updates, or answer technical inquiries.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Input Form -->
+                    <div class="pt-4 mt-auto">
+                        <div class="glass-panel border border-brand-200 dark:border-brand-800 rounded-2xl p-2 shadow-sm flex items-center space-x-2">
+                            <input id="ai-input-field" type="text" placeholder="Ask Gemini AI anything..." class="flex-1 bg-transparent border-none px-3 py-2 text-xs focus:outline-none" onkeydown="handleAIKey(event)">
+                            <button onclick="sendAIMessage()" class="bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 px-4 py-2 rounded-xl text-xs font-semibold hover:opacity-90 transition-opacity flex items-center space-x-1.5">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                <span>Generate</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE VIEW -->
+                <div id="view-profile" class="view-section hidden max-w-2xl mx-auto px-4 py-6 space-y-6 pb-24 md:pb-12">
+                    <div class="glass-panel border border-brand-200 dark:border-brand-800 rounded-3xl p-6 text-center relative overflow-hidden shadow-sm">
+                        <div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-brand-200 to-brand-300 dark:from-brand-800 dark:to-brand-700 opacity-60"></div>
+                        <div class="relative pt-12 flex flex-col items-center">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces" class="w-24 h-24 rounded-full object-cover border-4 border-brand-50 dark:border-brand-900 shadow-md">
+                            <h2 class="text-xl font-bold mt-3">Clara Vance</h2>
+                            <p class="text-xs text-brand-500">@claravance • UI/UX Architect & Minimalist Enthusiast</p>
+                            <p class="text-xs mt-3 max-w-md text-center text-brand-600 dark:text-brand-300">Designing calm digital spaces with generous whitespace, clean lines, and deep intentionality.</p>
+                            
+                            <div class="flex items-center space-x-6 mt-6 pt-6 border-t border-brand-200 dark:border-brand-800 w-full justify-center">
+                                <div class="text-center">
+                                    <span class="block font-bold text-sm">48</span>
+                                    <span class="text-[10px] text-brand-500 uppercase tracking-wider">Posts</span>
+                                </div>
+                                <div class="text-center">
+                                    <span class="block font-bold text-sm">1.4k</span>
+                                    <span class="text-[10px] text-brand-500 uppercase tracking-wider">Followers</span>
+                                </div>
+                                <div class="text-center">
+                                    <span class="block font-bold text-sm">342</span>
+                                    <span class="text-[10px] text-brand-500 uppercase tracking-wider">Following</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS VIEW -->
+                <div id="view-settings" class="view-section hidden max-w-xl mx-auto px-4 py-6 space-y-6 pb-24 md:pb-12">
+                    <h2 class="text-xl font-bold tracking-tight">App Settings</h2>
+                    <div class="glass-panel border border-brand-200 dark:border-brand-800 rounded-2xl p-4 space-y-4">
+                        <div class="flex items-center justify-between py-2 border-b border-brand-200 dark:border-brand-800">
+                            <div>
+                                <h4 class="text-sm font-semibold">Dark Appearance</h4>
+                                <p class="text-xs text-brand-500">Toggle between light and dark minimalist palette.</p>
+                            </div>
+                            <button onclick="toggleDarkMode()" class="px-4 py-2 rounded-xl bg-brand-200 dark:bg-brand-800 text-xs font-semibold">Toggle</button>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-brand-200 dark:border-brand-800">
+                            <div>
+                                <h4 class="text-sm font-semibold">Push Notifications</h4>
+                                <p class="text-xs text-brand-500">Receive alerts on direct messages and mentions.</p>
+                            </div>
+                            <input type="checkbox" checked class="rounded border-brand-300 text-brand-900 focus:ring-0">
+                        </div>
+                        <div class="flex items-center justify-between py-2">
+                            <div>
+                                <h4 class="text-sm font-semibold">Data Saver Mode</h4>
+                                <p class="text-xs text-brand-500">Compress media attachments automatically.</p>
+                            </div>
+                            <input type="checkbox" class="rounded border-brand-300 text-brand-900 focus:ring-0">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Mobile Bottom Nav -->
+            <nav class="md:hidden absolute bottom-0 left-0 right-0 glass-panel border-t border-brand-200 dark:border-brand-800 flex justify-around items-center py-2 z-20">
+                <button onclick="switchTab('feed')" class="mobile-nav-btn flex flex-col items-center p-2 text-brand-900 dark:text-brand-100" data-tab="feed">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span class="text-[10px] mt-1 font-medium">Feed</span>
+                </button>
+                <button onclick="switchTab('stories')" class="mobile-nav-btn flex flex-col items-center p-2 text-brand-500 hover:text-brand-900 dark:hover:text-brand-100" data-tab="stories">
+                    <i data-lucide="circle-dot" class="w-5 h-5"></i>
+                    <span class="text-[10px] mt-1 font-medium">Stories</span>
+                </button>
+                <button onclick="switchTab('messages')" class="mobile-nav-btn flex flex-col items-center p-2 text-brand-500 hover:text-brand-900 dark:hover:text-brand-100 relative" data-tab="messages">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span class="text-[10px] mt-1 font-medium">Chat</span>
+                    <span class="absolute top-1 right-2 w-2 h-2 bg-brand-900 dark:bg-brand-100 rounded-full"></span>
+                </button>
+                <button onclick="switchTab('ai')" class="mobile-nav-btn flex flex-col items-center p-2 text-brand-500 hover:text-brand-900 dark:hover:text-brand-100" data-tab="ai">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                    <span class="text-[10px] mt-1 font-medium">AI Bot</span>
+                </button>
+                <button onclick="switchTab('profile')" class="mobile-nav-btn flex flex-col items-center p-2 text-brand-500 hover:text-brand-900 dark:hover:text-brand-100" data-tab="profile">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span class="text-[10px] mt-1 font-medium">Profile</span>
+                </button>
+            </nav>
+
+        </main>
+    </div>
+
+    <!-- STORY VIEWER MODAL -->
+    <div id="story-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="relative w-full max-w-sm h-[80vh] rounded-3xl overflow-hidden bg-black flex flex-col justify-between p-4 shadow-2xl">
+            <!-- Progress bars -->
+            <div id="story-progress-bars" class="flex space-x-1 w-full pt-2">
+                <div class="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                    <div id="story-progress-fill" class="h-full bg-white w-0 transition-all duration-100"></div>
+                </div>
+            </div>
+            <!-- Story Header -->
+            <div class="flex items-center justify-between z-10">
+                <div class="flex items-center space-x-2">
+                    <img id="story-author-img" src="" class="w-8 h-8 rounded-full object-cover border border-white/40">
+                    <span id="story-author-name" class="text-xs font-semibold text-white"></span>
+                </div>
+                <button onclick="closeStoryViewer()" class="text-white p-1 rounded-full hover:bg-white/20">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <!-- Story Media Content -->
+            <div class="absolute inset-0 z-0">
+                <img id="story-media" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40"></div>
+            </div>
+            <!-- Story Footer Caption -->
+            <div class="z-10 pb-4 text-center">
+                <p id="story-caption" class="text-sm font-medium text-white px-4"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALL MODAL SIMULATION -->
+    <div id="call-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-6 text-white">
+        <div class="glass-panel border border-white/10 rounded-3xl p-8 max-w-md w-full flex flex-col items-center space-y-6 text-center">
+            <div class="relative">
+                <img id="call-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces" class="w-28 h-28 rounded-full object-cover border-4 border-white/20 animate-pulse-subtle">
+            </div>
+            <div>
+                <h3 id="call-name" class="text-xl font-bold">Marcus Vance</h3>
+                <p id="call-status" class="text-xs text-brand-300 mt-1">Connecting secure audio & video...</p>
+            </div>
+            <div class="flex items-center space-x-6 pt-4">
+                <button onclick="toggleMuteCall()" id="mute-btn" class="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                    <i data-lucide="mic" class="w-6 h-6"></i>
+                </button>
+                <button onclick="endCall()" class="p-4 rounded-full bg-rose-600 hover:bg-rose-700 transition-colors shadow-lg">
+                    <i data-lucide="phone-off" class="w-6 h-6"></i>
+                </button>
+                <button onclick="toggleVideoCall()" id="video-toggle-btn" class="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                    <i data-lucide="video" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // App State
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Mock Posts Data
+        const posts = [
+            {
+                id: 1,
+                author: "Elena Rostova",
+                username: "@elena_r",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
+                time: "2h ago",
+                content: "Simplicity is about subtracting the obvious and adding the meaningful. Working on our new typography system today. 📐✨",
+                image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=500&fit=crop",
+                likes: 34,
+                comments: 5,
+                liked: false
+            },
+            {
+                id: 2,
+                author: "Marcus Vance",
+                username: "@marcusv",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+                time: "5h ago",
+                content: "Morning light hitting the studio concrete. There is profound beauty in raw, unfinished textures.",
+                image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&h=500&fit=crop",
+                likes: 89,
+                comments: 12,
+                liked: true
+            }
+        ];
+
+        // Mock Stories Data
+        const stories = [
+            {
+                name: "Marcus Vance",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+                media: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=600&fit=crop",
+                caption: "Minimalist architecture design ✨"
+            },
+            {
+                name: "Elena Rostova",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
+                media: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=600&fit=crop",
+                caption: "Morning coffee & design review ☕"
+            },
+            {
+                name: "Julian Ray",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
+                media: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=600&fit=crop",
+                caption: "Urban geometry studies"
+            }
+        ];
+
+        let activeStoryIndex = 0;
+        let storyTimer = null;
+
+        // Render Posts
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = posts.map(post => `
+                <div class="glass-panel border border-brand-200 dark:border-brand-800 rounded-2xl p-4 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="${post.avatar}" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <h4 class="text-sm font-semibold">${post.author}</h4>
+                                <p class="text-[10px] text-brand-500">${post.username} • ${post.time}</p>
+                            </div>
+                        </div>
+                        <button class="text-brand-400 hover:text-brand-600 dark:hover:text-brand-200">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs leading-relaxed text-brand-800 dark:text-brand-200">${post.content}</p>
+                    ${post.image ? `<div class="rounded-xl overflow-hidden max-h-80"><img src="${post.image}" class="w-full h-full object-cover"></div>` : ''}
+                    <div class="flex items-center justify-between pt-2 border-t border-brand-100 dark:border-brand-800/60 text-xs text-brand-500">
+                        <button onclick="likePost(${post.id})" class="flex items-center space-x-1.5 hover:text-rose-500 transition-colors ${post.liked ? 'text-rose-500' : ''}">
+                            <i data-lucide="heart" class="w-4 h-4 ${post.liked ? 'fill-current' : ''}"></i>
+                            <span>${post.likes}</span>
+                        </button>
+                        <button class="flex items-center space-x-1.5 hover:text-brand-900 dark:hover:text-brand-100 transition-colors">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span>${post.comments}</span>
+                        </button>
+                        <button class="flex items-center space-x-1.5 hover:text-brand-900 dark:hover:text-brand-100 transition-colors">
+                            <i data-lucide="share-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function likePost(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                post.liked = !post.liked;
+                post.likes += post.liked ? 1 : -1;
+                renderPosts();
+            }
+        }
+
+        function createPost() {
+            const input = document.getElementById('post-input');
+            const text = input.value.trim();
+            if (!text) return;
+            posts.unshift({
+                id: Date.now(),
+                author: "Clara Vance",
+                username: "@claravance",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
+                time: "Just now",
+                content: text,
+                image: null,
+                likes: 0,
+                comments: 0,
+                liked: false
+            });
+            input.value = '';
+            renderPosts();
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('bg-brand-200/60', 'dark:bg-brand-800/60', 'text-brand-900', 'dark:text-brand-100');
+                    btn.classList.remove('text-brand-600', 'dark:text-brand-400');
+                } else {
+                    btn.classList.remove('bg-brand-200/60', 'dark:bg-brand-800/60', 'text-brand-900', 'dark:text-brand-100');
+                    btn.classList.add('text-brand-600', 'dark:text-brand-400');
+                }
+            });
+
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('text-brand-900', 'dark:text-brand-100');
+                    btn.classList.remove('text-brand-500');
+                } else {
+                    btn.classList.remove('text-brand-900', 'dark:text-brand-100');
+                    btn.classList.add('text-brand-500');
+                }
+            });
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Story Viewer Logic
+        function openStoryViewer(index) {
+            activeStoryIndex = index;
+            const story = stories[index];
+            document.getElementById('story-author-img').src = story.avatar;
+            document.getElementById('story-author-name').innerText = story.name;
+            document.getElementById('story-media').src = story.media;
+            document.getElementById('story-caption').innerText = story.caption;
+            document.getElementById('story-modal').classList.remove('hidden');
+
+            const fill = document.getElementById('story-progress-fill');
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
+
+            if (storyTimer) clearTimeout(storyTimer);
+            storyTimer = setTimeout(() => {
+                closeStoryViewer();
+            }, 5000);
+        }
+
+        function closeStoryViewer() {
+            document.getElementById('story-modal').classList.add('hidden');
+            if (storyTimer) clearTimeout(storyTimer);
+        }
+
+        function openStoryUploader() {
+            const caption = prompt("Enter story caption:");
+            if (caption) {
+                alert("Story published successfully!");
+            }
+        }
+
+        // Chat Logic
+        function selectChat(name, avatar) {
+            document.getElementById('chat-header-name').innerText = name;
+            document.getElementById('chat-header-avatar').src = avatar;
+            // Simulate typing indicator
+            const indicator = document.getElementById('typing-indicator');
+            indicator.classList.remove('hidden');
+            setTimeout(() => indicator.classList.add('hidden'), 3000);
+        }
+
+        function handleChatKey(event) {
+            if (event.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input-field');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const list = document.getElementById('chat-messages-list');
+            list.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 p-3 rounded-2xl rounded-tr-sm max-w-xs sm:max-w-md text-xs shadow-sm">
+                        ${text}
+                        <span class="block text-[9px] opacity-75 mt-1 text-right">Just now</span>
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            list.scrollTop = list.scrollHeight;
+        }
+
+        // Call Modal Simulation
+        function openCallModal(type) {
+            document.getElementById('call-status').innerText = type === 'video' ? 'Connecting secure video call...' : 'Connecting secure audio call...';
+            document.getElementById('call-modal').classList.remove('hidden');
+        }
+
+        function endCall() {
+            document.getElementById('call-modal').classList.add('hidden');
+        }
+
+        function toggleMuteCall() {
+            const btn = document.getElementById('mute-btn');
+            btn.classList.toggle('bg-rose-600/50');
+        }
+
+        function toggleVideoCall() {
+            const btn = document.getElementById('video-toggle-btn');
+            btn.classList.toggle('bg-rose-600/50');
+        }
+
+        // AI Assistant Integration (Gemini API)
+        async function sendAIMessage() {
+            const input = document.getElementById('ai-input-field');
+            const promptText = input.value.trim();
+            if (!promptText) return;
+
+            const list = document.getElementById('ai-messages-list');
+            // Append User prompt
+            list.innerHTML += `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="bg-brand-900 text-brand-100 dark:bg-brand-100 dark:text-brand-900 p-4 rounded-2xl rounded-tr-sm text-xs space-y-2 shadow-sm max-w-lg">
+                        <p>${promptText}</p>
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            list.scrollTop = list.scrollHeight;
+
+            // Append loading indicator
+            const loadingId = 'ai-loading-' + Date.now();
+            list.innerHTML += `
+                <div id="${loadingId}" class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white dark:bg-brand-800 p-4 rounded-2xl rounded-tl-sm text-xs space-y-2 shadow-sm border border-brand-200/50 dark:border-brand-700/50 max-w-lg animate-pulse-subtle">
+                        <p>Thinking with Gemini...</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            list.scrollTop = list.scrollHeight;
+
+            try {
+                const systemPrompt = "You are Aura AI, a sophisticated, minimalistic, concise, and helpful assistant integrated into a modern social network.";
+                const apiKey = ""; // Canvas provides automatically
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: promptText }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                const aiResponseText = candidate?.content?.parts?.[0]?.text || "I'm here to help you craft your minimalist thoughts.";
+
+                // Remove loading element
+                document.getElementById(loadingId).remove();
+
+                // Append AI Response
+                list.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div class="bg-white dark:bg-brand-800 p-4 rounded-2xl rounded-tl-sm text-xs space-y-2 shadow-sm border border-brand-200/50 dark:border-brand-700/50 max-w-lg">
+                            <p>${aiResponseText}</p>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                list.scrollTop = list.scrollHeight;
+
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                list.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        </div>
+                        <div class="bg-white dark:bg-brand-800 p-4 rounded-2xl rounded-tl-sm text-xs space-y-2 shadow-sm border border-brand-200/50">
+                            <p>Unable to connect to Gemini API right now. Please check your network connection.</p>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        }
+
+        function handleAIKey(event) {
+            if (event.key === 'Enter') sendAIMessage();
+        }
+
+        function clearAIText() {
+            document.getElementById('ai-messages-list').innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white dark:bg-brand-800 p-4 rounded-2xl rounded-tl-sm text-xs space-y-2 shadow-sm border border-brand-200/50 dark:border-brand-700/50 max-w-lg">
+                        <p>Chat cleared. How can I assist you further today?</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Initialize feed on load
+        window.onload = function() {
+            renderPosts();
+        };
+    </script>
+</body>
+</html>
